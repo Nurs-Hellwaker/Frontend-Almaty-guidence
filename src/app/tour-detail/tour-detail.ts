@@ -13,6 +13,14 @@ import { Tour, Booking } from '../interfaces/tour.interface';
   styleUrls: ['./tour-detail.css'],
 })
 export class TourDetailComponent implements OnInit {
+  //update v2
+  get isOverCapacity(): boolean {
+    if (!this.tour || !this.tour.available_slots) { 
+      return false;
+    }
+    return this.booking.people_count > this.tour.available_slots;
+  }
+
   tour: Tour | null = null;
   isLoading = true;
   errorMessage = '';
@@ -63,6 +71,12 @@ export class TourDetailComponent implements OnInit {
       this.bookingError = 'Количество человек должно быть не менее 1.';
       return;
     }
+    //update v2 
+    if (this.isOverCapacity) {
+      this.bookingError = `К сожалению, доступно только ${this.tour?.available_slots} мест.`;
+      return;
+    }
+    
     this.bookingLoading = true;
     this.tourService.createBooking(this.booking).subscribe({
       next: () => {

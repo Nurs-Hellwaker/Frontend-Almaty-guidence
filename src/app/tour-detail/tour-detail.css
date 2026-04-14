@@ -263,7 +263,7 @@
 .field textarea {
   width: 100%;             
   box-sizing: border-box;
-  
+
   border: 1.5px solid #e8e8f0;
   border-radius: 10px;
   padding: 0.7rem 0.9rem;
@@ -278,6 +278,18 @@
 
 .field input:focus,
 .field textarea:focus { border-color: #ff6b35; background: #fff; }
+
+/* update v2 */
+.error-text {
+  color: #ff4d4f;
+  font-size: 0.75rem;
+  margin-top: 0.2rem;
+}
+
+.field.has-error input {
+  border-color: #ff4d4f;
+  background-color: #fff1f0;
+}
 
 .total-row {
   display: flex;

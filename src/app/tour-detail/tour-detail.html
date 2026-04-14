@@ -105,7 +105,12 @@
               </div>
               <div class="field">
                 <label>Кол-во человек *</label>
+                <!-- update v2 -->
                 <input type="number" [(ngModel)]="booking.people_count" min="1" [max]="tour.available_slots" />
+                
+                @if (isOverCapacity) {
+                  <span class="error-text">К сожалению, осталось только {{ tour.available_slots }} мест.</span>
+                }
               </div>
               <div class="field full">
                 <label>Комментарий</label>
