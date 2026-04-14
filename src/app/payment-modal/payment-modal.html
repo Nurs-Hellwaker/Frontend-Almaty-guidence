@@ -1,0 +1,119 @@
+<div class="modal-overlay" (click)="onOverlayClick($event)">
+  <div class="modal-box">
+
+    <!-- HEADER -->
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <div class="modal-icon">💳</div>
+        <div>
+          <h2>Оплата тура</h2>
+          <p class="modal-tour-name">{{ tourTitle }}</p>
+        </div>
+      </div>
+      <button class="btn-close" (click)="onClose()">✕</button>
+    </div>
+
+    @if (step === 'form') {
+
+      <!-- ORDER SUMMARY -->
+      <div class="order-summary">
+        <div class="summary-row">
+          <span>Имя</span>
+          <strong>{{ booking.client_name }}</strong>
+        </div>
+        <div class="summary-row">
+          <span>Дата поездки</span>
+          <strong>{{ booking.travel_date }}</strong>
+        </div>
+        <div class="summary-row">
+          <span>Количество человек</span>
+          <strong>{{ booking.people_count }}</strong>
+        </div>
+        <div class="summary-row total">
+          <span>Итого к оплате</span>
+          <strong class="total-amount">{{ totalPrice | number }} ₸</strong>
+        </div>
+      </div>
+
+      <!-- CARD PREVIEW -->
+      <div class="card-preview">
+        <div class="card-chip">▬▬</div>
+        <div class="card-num">{{ maskedCard }}</div>
+        <div class="card-bottom">
+          <span>{{ cardHolder || 'CARD HOLDER' }}</span>
+          <span>{{ cardExpiry || 'MM/YY' }}</span>
+        </div>
+      </div>
+
+      <!-- ERROR -->
+      @if (errorMessage) {
+        <div class="modal-error">⚠ {{ errorMessage }}</div>
+      }
+
+      <!-- CARD FORM -->
+      <div class="card-form">
+        <div class="field full">
+          <label>Номер карты</label>
+          <input
+            type="text"
+            [ngModel]="cardNumber"
+            (ngModelChange)="formatCardNumber($event)"
+            placeholder="0000 0000 0000 0000"
+            maxlength="19"
+          />
+        </div>
+        <div class="field full">
+          <label>Имя владельца</label>
+          <input
+            type="text"
+            [(ngModel)]="cardHolder"
+            placeholder="IVAN IVANOV"
+            style="text-transform: uppercase"
+          />
+        </div>
+        <div class="field">
+          <label>Срок действия</label>
+          <input
+            type="text"
+            [ngModel]="cardExpiry"
+            (ngModelChange)="formatExpiry($event)"
+            placeholder="MM/YY"
+            maxlength="5"
+          />
+        </div>
+        <div class="field">
+          <label>CVV</label>
+          <input
+            type="password"
+            [ngModel]="cardCvv"
+            (ngModelChange)="formatCvv($event)"
+            placeholder="•••"
+            maxlength="3"
+          />
+        </div>
+      </div>
+
+      <!-- PAY BUTTON -->
+      <button class="btn-pay" (click)="pay()" [disabled]="isLoading">
+        @if (isLoading) {
+          <span class="dots"><span></span><span></span><span></span></span>
+        } @else {
+          Оплатить {{ totalPrice | number }} ₸ →
+        }
+      </button>
+
+      <p class="modal-hint">🔒 Платёж защищён шифрованием SSL</p>
+
+    }
+
+    @if (step === 'success') {
+      <div class="success-state">
+        <div class="success-circle">✓</div>
+        <h3>Оплата прошла успешно!</h3>
+        <p>Бронирование подтверждено. Детали отправлены на {{ booking.email }}</p>
+        <div class="success-amount">{{ totalPrice | number }} ₸</div>
+      </div>
+    }
+
+  </div>
+</div>

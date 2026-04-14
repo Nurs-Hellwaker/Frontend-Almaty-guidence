@@ -21,7 +21,6 @@
   }
 
   @if (tour && !isLoading) {
-    <!-- HERO IMAGE -->
     <div class="detail-hero">
       @if (tour.image) {
         <img [src]="tour.image" [alt]="tour.title" class="hero-img" />
@@ -41,10 +40,8 @@
       </div>
     </div>
 
-    <!-- CONTENT -->
     <div class="content-grid">
 
-      <!-- LEFT: INFO -->
       <div class="info-col">
         <div class="section-card">
           <h2>📋 Описание тура</h2>
@@ -67,76 +64,71 @@
         </div>
       </div>
 
-      <!-- RIGHT: BOOKING FORM -->
       <div class="form-col">
+        
+        <div class="booking-card">
+          <h2>🗓 Забронировать тур</h2>
+          <p class="form-sub">Заполните данные — мы подтвердим бронь</p>
 
-        @if (bookingSuccess) {
-          <div class="success-card">
-            <div class="success-icon">🎉</div>
-            <h3>Бронирование отправлено!</h3>
-            <p>Мы свяжемся с вами в ближайшее время.</p>
-            <button class="btn-primary" (click)="goBack()">Посмотреть другие туры</button>
-          </div>
-        } @else {
-          <div class="booking-card">
-            <h2>🗓 Забронировать тур</h2>
-            <p class="form-sub">Заполните данные — мы подтвердим бронь</p>
+          @if (bookingError) {
+            <div class="booking-error">⚠ {{ bookingError }}</div>
+          }
 
-            @if (bookingError) {
-              <div class="booking-error">⚠ {{ bookingError }}</div>
-            }
-
-            <div class="form-grid">
-              <div class="field full">
-                <label>Ваше имя *</label>
-                <input type="text" [(ngModel)]="booking.client_name" placeholder="Иванов Иван" />
-              </div>
-              <div class="field">
-                <label>Телефон *</label>
-                <input type="tel" [(ngModel)]="booking.phone" placeholder="+7 777 000 00 00" />
-              </div>
-              <div class="field">
-                <label>Email *</label>
-                <input type="email" [(ngModel)]="booking.email" placeholder="your@email.com" />
-              </div>
-              <div class="field">
-                <label>Дата поездки *</label>
-                <input type="date" [(ngModel)]="booking.travel_date" />
-              </div>
-              <div class="field">
-                <label>Кол-во человек *</label>
-                <!-- update v2 -->
-                <input type="number" [(ngModel)]="booking.people_count" min="1" [max]="tour.available_slots" />
-                
-                @if (isOverCapacity) {
-                  <span class="error-text">К сожалению, осталось только {{ tour.available_slots }} мест.</span>
-                }
-              </div>
-              <div class="field full">
-                <label>Комментарий</label>
-                <textarea [(ngModel)]="booking.comment" placeholder="Пожелания, вопросы..." rows="3"></textarea>
-              </div>
+          <div class="form-grid">
+            <div class="field full">
+              <label>Ваше имя *</label>
+              <input type="text" [(ngModel)]="booking.client_name" placeholder="Иванов Иван" />
             </div>
-
-            @if (booking.people_count > 0) {
-              <div class="total-row">
-                <span>Итого:</span>
-                <strong>{{ (+tour.price * booking.people_count) | number }} ₸</strong>
-              </div>
-            }
-
-            <button class="btn-book" (click)="submitBooking()" [disabled]="bookingLoading">
-              @if (bookingLoading) {
-                <span class="dots"><span></span><span></span><span></span></span>
-              } @else {
-                Забронировать →
+            <div class="field">
+              <label>Телефон *</label>
+              <input type="tel" [(ngModel)]="booking.phone" placeholder="+7 777 000 00 00" />
+            </div>
+            <div class="field">
+              <label>Email *</label>
+              <input type="email" [(ngModel)]="booking.email" placeholder="your@email.com" />
+            </div>
+            <div class="field">
+              <label>Дата поездки *</label>
+              <input type="date" [(ngModel)]="booking.travel_date" />
+            </div>
+            <div class="field">
+              <label>Кол-во человек *</label>
+              <input type="number" [(ngModel)]="booking.people_count" min="1" [max]="tour.available_slots" (ngModelChange)="onPeopleChange($event)" />
+              
+              @if (isOverCapacity) {
+                <span class="error-text">К сожалению, осталось только {{ tour.available_slots }} мест.</span>
               }
-            </button>
+            </div>
+            <div class="field full">
+              <label>Комментарий</label>
+              <textarea [(ngModel)]="booking.comment" placeholder="Пожелания, вопросы..." rows="3"></textarea>
+            </div>
           </div>
-        }
+
+          @if (booking.people_count > 0) {
+            <div class="total-row">
+              <span>Итого:</span>
+              <strong>{{ totalPrice | number }} ₸</strong>
+            </div>
+          }
+
+          <button class="btn-book" (click)="openPaymentModal()" [disabled]="booking.people_count < 1 || isOverCapacity">
+            Забронировать и перейти к оплате →
+          </button>
+        </div>
 
       </div>
     </div>
+  }
+
+  @if (isPaymentModalOpen && tour) {
+    <app-payment-modal
+      [booking]="booking"
+      [totalPrice]="totalPrice"
+      [tourTitle]="tour.title"
+      (close)="onModalClose()"
+      (paymentSuccess)="onPaymentSuccess()"
+    />
   }
 
 </div>

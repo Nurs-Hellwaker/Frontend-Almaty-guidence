@@ -4,26 +4,21 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TourService } from '../services/tour.service';
 import { Tour, Booking } from '../interfaces/tour.interface';
+import { PaymentModalComponent } from '../payment-modal/payment-modal';
 
 @Component({
   selector: 'app-tour-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PaymentModalComponent],
   templateUrl: './tour-detail.html',
   styleUrls: ['./tour-detail.css'],
 })
 export class TourDetailComponent implements OnInit {
-  //update v2
-  get isOverCapacity(): boolean {
-    if (!this.tour || !this.tour.available_slots) { 
-      return false;
-    }
-    return this.booking.people_count > this.tour.available_slots;
-  }
-
   tour: Tour | null = null;
   isLoading = true;
   errorMessage = '';
+  bookingError = '';
+  isPaymentModalOpen = false;
 
   booking: Booking = {
     tour: 0,
@@ -35,15 +30,23 @@ export class TourDetailComponent implements OnInit {
     comment: '',
   };
 
-  bookingSuccess = false;
-  bookingError = '';
-  bookingLoading = false;
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private tourService: TourService
   ) {}
+
+  get isOverCapacity(): boolean {
+    if (!this.tour || !this.tour.available_slots) { 
+      return false;
+    }
+    return this.booking.people_count > this.tour.available_slots;
+  }
+
+  get totalPrice(): number {
+    if (!this.tour) return 0;
+    return +this.tour.price * (+this.booking.people_count || 1);
+  }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -60,35 +63,54 @@ export class TourDetailComponent implements OnInit {
     });
   }
 
-  submitBooking(): void {
+  onPeopleChange(value: string): void {
+    this.booking.people_count = Math.max(1, +value || 1);
+  }
+
+  // Валидация → открываем модал
+  openPaymentModal(): void {
     this.bookingError = '';
     const { client_name, phone, email, travel_date, people_count } = this.booking;
+    
+    // 1. Проверка обязательных полей
     if (!client_name.trim() || !phone.trim() || !email.trim() || !travel_date) {
       this.bookingError = 'Заполните все обязательные поля.';
       return;
     }
+
+    // 2. Проверка на прошедшую дату
+    const selectedDate = new Date(travel_date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Обнуляем время для корректного сравнения дат
+
+    if (selectedDate <= today) {
+      this.bookingError = 'Дата поездки должна начинаться с завтрашнего дня.';
+      return;
+    }
+
+    // 3. Проверка количества человек
     if (people_count < 1) {
       this.bookingError = 'Количество человек должно быть не менее 1.';
       return;
     }
-    //update v2 
+
+    // 4. Проверка на максимальное количество мест
     if (this.isOverCapacity) {
       this.bookingError = `К сожалению, доступно только ${this.tour?.available_slots} мест.`;
       return;
     }
-    
-    this.bookingLoading = true;
-    this.tourService.createBooking(this.booking).subscribe({
-      next: () => {
-        this.bookingSuccess = true;
-        this.bookingLoading = false;
-      },
-      error: err => {
-        this.bookingError =
-          err.error?.detail || 'Ошибка при бронировании. Попробуйте снова.';
-        this.bookingLoading = false;
-      },
-    });
+
+    // Если все проверки пройдены — открываем окно
+    this.isPaymentModalOpen = true;
+  }
+  
+  onModalClose(): void {
+    this.isPaymentModalOpen = false;
+  }
+
+  onPaymentSuccess(): void {
+    this.isPaymentModalOpen = false;
+    this.router.navigate(['/tours']);
   }
 
   goBack(): void {
