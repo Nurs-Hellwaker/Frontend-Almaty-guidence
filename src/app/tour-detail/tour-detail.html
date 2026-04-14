@@ -1,0 +1,137 @@
+<div class="page">
+
+  <nav class="navbar">
+    <button class="btn-back" (click)="goBack()">← Назад к турам</button>
+    <div class="nav-brand">⛰ <em>Almaty Tours</em></div>
+  </nav>
+
+  @if (isLoading) {
+    <div class="loading-wrap">
+      <div class="spinner-ring"></div>
+      <p>Загружаем тур...</p>
+    </div>
+  }
+
+  @if (errorMessage && !isLoading) {
+    <div class="error-wrap">
+      <div class="error-icon">⚠️</div>
+      <p>{{ errorMessage }}</p>
+      <button class="btn-primary" (click)="goBack()">← Вернуться</button>
+    </div>
+  }
+
+  @if (tour && !isLoading) {
+    <!-- HERO IMAGE -->
+    <div class="detail-hero">
+      @if (tour.image) {
+        <img [src]="tour.image" [alt]="tour.title" class="hero-img" />
+      } @else {
+        <div class="hero-placeholder">🏔</div>
+      }
+      <div class="hero-overlay">
+        <div class="hero-meta">
+          <span class="hero-location">📍 {{ tour.city }}, {{ tour.country }}</span>
+          <h1 class="hero-title">{{ tour.title }}</h1>
+          <div class="hero-chips">
+            <span>🗓 {{ tour.duration }} дней</span>
+            <span>👥 {{ tour.available_slots }} мест</span>
+            <span>💰 {{ tour.price | number }} ₸</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content-grid">
+
+      <!-- LEFT: INFO -->
+      <div class="info-col">
+        <div class="section-card">
+          <h2>📋 Описание тура</h2>
+          <p class="desc-text">{{ tour.description }}</p>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="stat-val">{{ tour.duration }}</div>
+            <div class="stat-label">Дней</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val">{{ tour.available_slots }}</div>
+            <div class="stat-label">Мест</div>
+          </div>
+          <div class="stat-box orange">
+            <div class="stat-val">{{ tour.price | number }}</div>
+            <div class="stat-label">Тенге / чел.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: BOOKING FORM -->
+      <div class="form-col">
+
+        @if (bookingSuccess) {
+          <div class="success-card">
+            <div class="success-icon">🎉</div>
+            <h3>Бронирование отправлено!</h3>
+            <p>Мы свяжемся с вами в ближайшее время.</p>
+            <button class="btn-primary" (click)="goBack()">Посмотреть другие туры</button>
+          </div>
+        } @else {
+          <div class="booking-card">
+            <h2>🗓 Забронировать тур</h2>
+            <p class="form-sub">Заполните данные — мы подтвердим бронь</p>
+
+            @if (bookingError) {
+              <div class="booking-error">⚠ {{ bookingError }}</div>
+            }
+
+            <div class="form-grid">
+              <div class="field full">
+                <label>Ваше имя *</label>
+                <input type="text" [(ngModel)]="booking.client_name" placeholder="Иванов Иван" />
+              </div>
+              <div class="field">
+                <label>Телефон *</label>
+                <input type="tel" [(ngModel)]="booking.phone" placeholder="+7 777 000 00 00" />
+              </div>
+              <div class="field">
+                <label>Email *</label>
+                <input type="email" [(ngModel)]="booking.email" placeholder="your@email.com" />
+              </div>
+              <div class="field">
+                <label>Дата поездки *</label>
+                <input type="date" [(ngModel)]="booking.travel_date" />
+              </div>
+              <div class="field">
+                <label>Кол-во человек *</label>
+                <input type="number" [(ngModel)]="booking.people_count" min="1" [max]="tour.available_slots" />
+              </div>
+              <div class="field full">
+                <label>Комментарий</label>
+                <textarea [(ngModel)]="booking.comment" placeholder="Пожелания, вопросы..." rows="3"></textarea>
+              </div>
+            </div>
+
+            @if (booking.people_count > 0) {
+              <div class="total-row">
+                <span>Итого:</span>
+                <strong>{{ (+tour.price * booking.people_count) | number }} ₸</strong>
+              </div>
+            }
+
+            <button class="btn-book" (click)="submitBooking()" [disabled]="bookingLoading">
+              @if (bookingLoading) {
+                <span class="dots"><span></span><span></span><span></span></span>
+              } @else {
+                Забронировать →
+              }
+            </button>
+          </div>
+        }
+
+      </div>
+    </div>
+  }
+
+</div>

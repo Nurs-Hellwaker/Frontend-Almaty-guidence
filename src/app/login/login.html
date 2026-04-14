@@ -1,0 +1,82 @@
+<div class="page">
+
+  <div class="left-panel">
+    <div class="left-content">
+      <div class="badge">🏔 Откройте Казахстан</div>
+      <h1 class="hero-title">Алматы<br>ждёт<br>тебя</h1>
+      <p class="hero-sub">Туры, горы, природа и незабываемые впечатления — всё в одном месте.</p>
+      <div class="tags">
+        <span>🌄 Горные походы</span>
+        <span>🏙 Городские туры</span>
+        <span>🎿 Зимний отдых</span>
+        <span>🌸 Весенние маршруты</span>
+      </div>
+    </div>
+    <div class="circles">
+      <div class="circle c1"></div>
+      <div class="circle c2"></div>
+      <div class="circle c3"></div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="form-box">
+
+      <div class="form-header">
+        <div class="logo">⛰</div>
+        <h2>Войти в аккаунт</h2>
+        <p>Добро пожаловать в Almaty Tours</p>
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-box" (click)="clearError()">
+          <span>⚠ {{ errorMessage }}</span>
+          <button class="close-btn">✕</button>
+        </div>
+      }
+
+      <div class="field">
+        <label>Имя пользователя</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input
+            type="text"
+            [(ngModel)]="username"
+            placeholder="Введите логин"
+            [disabled]="isLoading"
+            (input)="clearError()"
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Пароль</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            [(ngModel)]="password"
+            placeholder="Введите пароль"
+            [disabled]="isLoading"
+            (keyup.enter)="onLogin()"
+            (input)="clearError()"
+          />
+          <button class="toggle-pw" (click)="togglePassword()">
+            {{ showPassword ? '🙈' : '👁' }}
+          </button>
+        </div>
+      </div>
+
+      <button class="btn-login" (click)="onLogin()" [disabled]="isLoading">
+        @if (isLoading) {
+          <span class="dots"><span></span><span></span><span></span></span>
+        } @else {
+          Войти &nbsp;→
+        }
+      </button>
+
+      <p class="hint">Нет аккаунта? Обратитесь к администратору.</p>
+    </div>
+  </div>
+
+</div>

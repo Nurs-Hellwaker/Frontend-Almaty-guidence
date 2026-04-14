@@ -1,0 +1,139 @@
+<div class="page">
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="nav-logo">⛰</span>
+      <span class="nav-title">Almaty <em>Tours</em></span>
+    </div>
+    <button class="btn-logout" (click)="logout()">Выйти →</button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">🇰🇿 Исследуй Казахстан</div>
+      <h1>Найди свой<br><span>идеальный тур</span></h1>
+      <p>Горы, степи, города — выбирай приключение</p>
+    </div>
+    <div class="hero-blobs">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+    </div>
+  </section>
+
+  <!-- FILTERS -->
+  <section class="filters-section">
+    <div class="filters-wrap">
+
+      <div class="filter-group search-group">
+        <span class="filter-icon">🔍</span>
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          placeholder="Поиск по названию, городу, стране..."
+          (keyup.enter)="loadTours()"
+        />
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-icon">↕</span>
+        <select [(ngModel)]="ordering" (ngModelChange)="loadTours()">
+          @for (opt of orderOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-icon">💰</span>
+        <input
+          type="number"
+          [(ngModel)]="minPrice"
+          placeholder="Мин. цена (₸)"
+          (keyup.enter)="loadTours()"
+          min="0"
+        />
+      </div>
+
+      <button class="btn-search" (click)="loadTours()">Найти</button>
+      <button class="btn-reset" (click)="resetFilters()">Сбросить</button>
+    </div>
+  </section>
+
+  <!-- RESULTS INFO -->
+  <div class="results-bar">
+    @if (!isLoading) {
+      <span>Найдено туров: <strong>{{ filteredCount }}</strong></span>
+    }
+  </div>
+
+  <!-- CONTENT -->
+  <main class="main">
+
+    @if (isLoading) {
+      <div class="loading-grid">
+        @for (n of [1,2,3,4,5,6]; track n) {
+          <div class="skeleton-card">
+            <div class="skel skel-img"></div>
+            <div class="skel skel-line" style="width:70%"></div>
+            <div class="skel skel-line" style="width:45%"></div>
+            <div class="skel skel-line" style="width:55%"></div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (errorMessage && !isLoading) {
+      <div class="error-state">
+        <div class="error-icon">⚠️</div>
+        <p>{{ errorMessage }}</p>
+        <button class="btn-retry" (click)="loadTours()">Попробовать снова</button>
+      </div>
+    }
+
+    @if (!isLoading && !errorMessage) {
+      @if (tours.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">🏔</div>
+          <h3>Туры не найдены</h3>
+          <p>Попробуйте изменить параметры поиска</p>
+          <button class="btn-retry" (click)="resetFilters()">Сбросить фильтры</button>
+        </div>
+      } @else {
+        <div class="tours-grid">
+          @for (tour of tours; track tour.id) {
+            <div class="tour-card" (click)="goToDetail(tour.id)">
+              <div class="card-img-wrap">
+                @if (tour.image) {
+                  <img [src]="tour.image" [alt]="tour.title" class="card-img" />
+                } @else {
+                  <div class="card-img-placeholder">🏔</div>
+                }
+                <div class="card-badge">{{ tour.duration }} дн.</div>
+              </div>
+              <div class="card-body">
+                <div class="card-location">
+                  <span>📍</span> {{ tour.city }}, {{ tour.country }}
+                </div>
+                <h3 class="card-title">{{ tour.title }}</h3>
+                <p class="card-desc">{{ tour.description }}</p>
+                <div class="card-footer">
+                  <div class="card-price">{{ tour.price | number }} ₸</div>
+                  <div class="card-slots"
+                    [class.low]="tour.available_slots < 5">
+                    👥 {{ tour.available_slots }} мест
+                  </div>
+                </div>
+                <button class="btn-details" (click)="goToDetail(tour.id); $event.stopPropagation()">
+                  Подробнее →
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
+  </main>
+</div>
