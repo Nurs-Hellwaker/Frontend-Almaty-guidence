@@ -253,7 +253,7 @@
 
 .field label {
   font-size: 0.73rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #888;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -261,6 +261,9 @@
 
 .field input,
 .field textarea {
+  width: 100%;             
+  box-sizing: border-box;
+  
   border: 1.5px solid #e8e8f0;
   border-radius: 10px;
   padding: 0.7rem 0.9rem;
