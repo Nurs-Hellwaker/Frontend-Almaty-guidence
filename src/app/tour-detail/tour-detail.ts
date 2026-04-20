@@ -67,6 +67,7 @@ export class TourDetailComponent implements OnInit {
     this.booking.people_count = Math.max(1, +value || 1);
   }
 
+
   // Валидация → открываем модал
   openPaymentModal(): void {
     this.bookingError = '';
@@ -77,6 +78,31 @@ export class TourDetailComponent implements OnInit {
       this.bookingError = 'Заполните все обязательные поля.';
       return;
     }
+
+    // --- НОВОЕ: Валидация Email ---
+    // Проверяем, что email содержит @, домен и точку
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email.trim())) {
+      this.bookingError = 'Пожалуйста, укажите корректный email (например, name@mail.com).';
+      return;
+    }
+
+    // --- НОВОЕ: Валидация Телефона ---
+    // Очищаем введенный номер от пробелов, скобок, тире и плюсов, оставляя только цифры
+    const phoneDigitsOnly = phone.replace(/\D/g, '');
+
+    const hasLetters = /[a-zA-Zа-яА-ЯёЁ]/.test(phone);
+    if (hasLetters) {
+      this.bookingError = 'В номере телефона не должно быть букв, только цифры.';
+      return;
+    }
+    
+    // Проверяем, что пользователь ввел реальное количество цифр (обычно от 10 до 15)
+    if (phoneDigitsOnly.length < 10 || phoneDigitsOnly.length > 15) {
+      this.bookingError = 'Пожалуйста, введите корректный номер телефона (от 10 до 15 цифр).';
+      return;
+    }
+
 
     // 2. Проверка на прошедшую дату
     const selectedDate = new Date(travel_date);

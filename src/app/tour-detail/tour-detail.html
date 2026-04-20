@@ -81,7 +81,12 @@
             </div>
             <div class="field">
               <label>Телефон *</label>
-              <input type="tel" [(ngModel)]="booking.phone" placeholder="+7 777 000 00 00" />
+              <input 
+                type="tel" 
+                [(ngModel)]="booking.phone"
+                placeholder="+7 777 000 00 00" 
+              />
+              
             </div>
             <div class="field">
               <label>Email *</label>
@@ -104,14 +109,14 @@
               <textarea [(ngModel)]="booking.comment" placeholder="Пожелания, вопросы..." rows="3"></textarea>
             </div>
           </div>
-
+          <!--
           @if (booking.people_count > 0) {
             <div class="total-row">
               <span>Итого:</span>
               <strong>{{ totalPrice | number }} ₸</strong>
             </div>
           }
-
+          -->
           <button class="btn-book" (click)="openPaymentModal()" [disabled]="booking.people_count < 1 || isOverCapacity">
             Забронировать и перейти к оплате →
           </button>

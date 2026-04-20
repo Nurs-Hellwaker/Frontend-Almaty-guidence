@@ -271,3 +271,27 @@
   .hero-title { font-size: 2.4rem; }
   .right-panel { padding: 2rem 1.5rem; }
 }
+
+.register-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  margin-top: 1.2rem;
+  font-size: .82rem;
+  color: rgba(240,235,224,0.45);
+}
+
+.btn-register-link {
+  background: none;
+  border: none;
+  color: #c4a464;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: .82rem;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity .2s;
+}
+
+.btn-register-link:hover { opacity: .75; }

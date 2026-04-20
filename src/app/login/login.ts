@@ -46,4 +46,8 @@ export class LoginComponent {
   clearError(): void {
     this.errorMessage = '';
   }
+  
+  goToRegister(): void {
+    this.router.navigate(['/register']);
+  }
 }
